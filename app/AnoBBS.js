@@ -17,11 +17,19 @@ export default class AnoBoos {
 
     static getForumList() {
         return AnoBoos._request('GET', '/Api/getForumList')
-            .then((response) => response.json());
+            .then((response) => response.json())
+            .then((response) => {
+                let forums = [];
+                response.forEach((item) => {
+                    forums = forums.concat(item.forums);
+                });
+
+                return forums;
+            });
     }
 
     static showf(id, page = 1) {
-        return AnoBoos._request('GET', '/Api/showf')
+        return AnoBoos._request('GET', `/Api/showf?id=${id}&page=${page}`)
             .then((response => response.json()));
     }
 }

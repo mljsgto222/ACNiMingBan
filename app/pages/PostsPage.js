@@ -41,6 +41,7 @@ export default class NiMingBan extends Component {
 
     init() {
         this.posts = [];
+        this.page = 1;
         this.ds = new ListView.DataSource({ rowHasChanged: (row1, row2) => {
             return row1 && row2 && row1.id !== row2.id;
         }});
@@ -75,7 +76,7 @@ export default class NiMingBan extends Component {
             return (
                 <SideMenu 
                     menu={
-                        <ForumsMenu />
+                        <ForumsMenu onForumSelected={this.onForumSelected.bind(this)}/>
                     }
                     menuPosition="right"
                     isOpen={this.state.isMenuOpen}
@@ -112,16 +113,17 @@ export default class NiMingBan extends Component {
 
     _load() {
         let self = this;
-        return AnoBBS.showf(self.id, self.page).then((posts) => {
+        return AnoBBS.showf(self.forumsId, self.page).then((posts) => {
             self.isMore = posts.length > 0;
             if(self.isMore){
                 self.posts = self.posts.concat(posts);
                 self.page += 1;
             }
-            
+
             self.setState({
                 posts: self.ds.cloneWithRows(self.posts)
             });
+
             return posts;
         });
     }
@@ -150,5 +152,17 @@ export default class NiMingBan extends Component {
                 self.setState({refreshing: false});
             });
         }
+    }
+
+    onForumSelected(forum) {
+        this.forumsId = forum.id;
+        this.posts = [];
+        this.page = 1;
+        this.setState({
+            posts: null,
+            isMenuOpen: false
+        });
+
+        this._load();
     }
 }

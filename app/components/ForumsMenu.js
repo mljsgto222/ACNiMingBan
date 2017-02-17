@@ -5,7 +5,8 @@ import {
     Text,
     View,
     ListView,
-    ActivityIndicator
+    ActivityIndicator,
+    TouchableHighlight
 } from 'react-native';
 
 import AnoBBS from '../AnoBBS';
@@ -33,9 +34,11 @@ export default class ForumsMenu extends Component{
                         dataSource={this.state.forums}
                         renderRow= {(rowData) => {
                             return (
-                                <View style={style.item}>
-                                    <Text style={style.title}>{rowData.name}</Text>
-                                </View>
+                                <TouchableHighlight onPress={this.onSelected.bind(this, rowData)}>
+                                    <View style={style.item}>
+                                        <Text style={style.title}>{rowData.name}</Text>
+                                    </View>
+                                </TouchableHighlight>
                             )
                         }}
                     />
@@ -48,6 +51,10 @@ export default class ForumsMenu extends Component{
                 />
             );
         }
+    }
+
+    onSelected(forum) {
+        this.props.onForumSelected && this.props.onForumSelected(forum);
     }
 
     _load(){

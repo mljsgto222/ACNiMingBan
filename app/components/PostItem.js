@@ -5,18 +5,23 @@ import {
     Text,
     View,
     Button,
+    WebView
 } from 'react-native';
+
 
 export default class PostItem  extends Component {
     constructor() {
         super();
-    }
-
-    componentWillMount() {
-        this.props.post.content = this.props.post.content.replace(/<br\/>/g, '\n');
+        this.state = {
+            height: 0
+        }
     }
 
     render(){
+        let cssStyle = 'body{padding:0,font-size:14px;margin:0;display:inline-block}';
+        let script = 'window.location.hash=1;document.title=document.body.offsetHeight';
+        let html = `<!DOCUMENT html><html><header><style>${cssStyle}</style></header><body>${this.props.post.content}<script>${script}</script></body></html>`
+        
         return (
             <View style={style.container}>
                 <View style={style.header}>
@@ -25,10 +30,22 @@ export default class PostItem  extends Component {
                     <Text style={style.small}>{this.props.post.now}</Text>
                 </View>
                 <View>
-                    <Text style={style.content}>{this.props.post.content}</Text>
+                    <WebView
+                        source={{html: html}}
+                        automaticallyAdjustContentInsets={false}
+                        scrollEnabled={false}
+                        onNavigationStateChange={this.onNavigationStateChange.bind(this)}
+                        style={{height: this.state.height}}
+                    />
                 </View>
             </View>
         );
+    }
+
+    onNavigationStateChange(state) {
+        this.setState({
+            height: parseInt(state.title)
+        });
     }
 }
 
@@ -49,9 +66,6 @@ const style = StyleSheet.create({
     admin: {
         color: 'red'
     },
-    content: {
-        fontSize: 14
-    }
 });
 
 PostItem.propTypes = {
