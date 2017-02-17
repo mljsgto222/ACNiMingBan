@@ -36,7 +36,7 @@ const style = StyleSheet.create({
     container: {
         padding: 16,
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: '#ddd',
+        borderBottomColor: '#ccc',
     },
     header: {
         marginBottom: 16,

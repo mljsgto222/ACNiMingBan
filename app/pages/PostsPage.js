@@ -12,17 +12,25 @@ import {
     RefreshControl,
     View
 } from 'react-native';
+const SideMenu = require('react-native-side-menu');
 
 import AnoBBS from '../AnoBBS';
 import PostItem from '../components/PostItem';
+import ForumsMenu from '../components/ForumsMenu';
 
 export default class NiMingBan extends Component {
     static navigationOptions = {
         title: '首页',
-        header: {
-
+        header: ({state, setParams}) => {
+            let right = (
+                <Button title="板块" onPress={() => {
+                    state.instance.setState({
+                        isMenuOpen: !state.instance.state.isMenuOpen
+                    });
+                }}></Button>
+            );
+            return { right };
         }
-        
     }
 
     constructor() {
@@ -39,13 +47,15 @@ export default class NiMingBan extends Component {
         this.state = {
             posts: null,
             refreshing: false,
-            loading: false
+            loading: false,
+            isMore: true,
+            isMenuOpen: false
         };
     }
 
     componentWillMount() {
         let self = this;
-        AnoBBS.getForumList().then(function(forums){
+        AnoBBS.getForumList().then((forums) => {
             if(forums[0]){
                 self.forumsId = forums[0].id;
                 return self._load();
@@ -61,30 +71,35 @@ export default class NiMingBan extends Component {
 
     render() {
          if(this.state.posts){
+            this.props.navigation.state.instance = this;
             return (
-                <View style={{flex: 1}}>
-                    <ListView
-                        refreshControl={
-                            <RefreshControl 
-                                refreshing={this.state.refreshing}
-                                onRefresh={this.onRefresh.bind(this)}
-                            />
-                        }
-                        onEndReached={this.onEndReached.bind(this)}
-                        onEndReachedThreshold={20}
-                        style={{flex: 1}}
-                        dataSource={this.state.posts}
-                        renderRow={(rowData) => {
-                            return (
-                                <PostItem post={rowData} />
-                            );
-                        }}
-                    />
-                    <ActivityIndicator 
-                        animating={this.state.loading}
-                        style={{alignItems: 'center', height: 30}}
-                    />
-                </View>
+                <SideMenu 
+                    menu={
+                        <ForumsMenu />
+                    }
+                    menuPosition="right"
+                    isOpen={this.state.isMenuOpen}
+                >
+                    <View style={{flex: 1, backgroundColor: 'white'}}>
+                        <ListView
+                            refreshControl={
+                                <RefreshControl 
+                                    refreshing={this.state.refreshing}
+                                    onRefresh={this.onRefresh.bind(this)}
+                                />
+                            }
+                            onEndReached={this.onEndReached.bind(this)}
+                            onEndReachedThreshold={20}
+                            style={{flex: 1}}
+                            dataSource={this.state.posts}
+                            renderRow={(rowData) => {
+                                return (
+                                    <PostItem post={rowData} />
+                                );
+                            }}
+                        />
+                    </View>
+                </SideMenu>
             )
         } else {
             return (
@@ -98,8 +113,12 @@ export default class NiMingBan extends Component {
     _load() {
         let self = this;
         return AnoBBS.showf(self.id, self.page).then((posts) => {
-            self.posts = self.posts.concat(posts);
-            self.page += 1;
+            self.isMore = posts.length > 0;
+            if(self.isMore){
+                self.posts = self.posts.concat(posts);
+                self.page += 1;
+            }
+            
             self.setState({
                 posts: self.ds.cloneWithRows(self.posts)
             });
@@ -108,8 +127,8 @@ export default class NiMingBan extends Component {
     }
 
     onEndReached() {
-        let self = this;
-        if(!this.state.loading){
+        if(this.isMore && !this.state.loading){
+            let self = this;
             self.setState({loading: true});
             this._load().catch(() => {
 
