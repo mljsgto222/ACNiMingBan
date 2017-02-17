@@ -6,11 +6,12 @@
 
 import React, { Component } from 'react';
 import {
-    Button,
+    TouchableOpacity,
     ListView,
     ActivityIndicator,
     RefreshControl,
-    View
+    View,
+    Image
 } from 'react-native';
 const SideMenu = require('react-native-side-menu');
 
@@ -23,11 +24,13 @@ export default class NiMingBan extends Component {
         title: '首页',
         header: ({state, setParams}) => {
             let right = (
-                <Button title="板块" onPress={() => {
+                <TouchableOpacity onPress={() => {
                     state.instance.setState({
                         isMenuOpen: !state.instance.state.isMenuOpen
                     });
-                }}></Button>
+                }}>
+                    <Image source={require('../images/navicon.png')} style={{ width: 35, height: 35}}></Image>
+                </TouchableOpacity>
             );
             return { right };
         }
