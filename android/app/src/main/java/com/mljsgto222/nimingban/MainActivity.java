@@ -1,4 +1,4 @@
-package com.nimingban;
+package com.mljsgto222.nimingban;
 
 import com.facebook.react.ReactActivity;
 
