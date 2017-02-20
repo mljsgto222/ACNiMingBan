@@ -6,15 +6,55 @@ import {
     View,
     Button,
     WebView,
-    TouchableOpacity
+    TouchableOpacity,
+    Image,
 } from 'react-native';
 
+import AnoBBS from '../AnoBBS';
+
+const MAX_IMAGE_WIDTH = 100;
+const MAX_IMAGE_HEIGHT = 100;
 
 export default class PostItem  extends Component {
     constructor() {
         super();
         this.state = {
-            height: 0
+            height: 0,
+            imageWidth: 0,
+            imageHeight: 0
+        }
+    }
+
+    renderImage(){
+        if(this.props.post.img){
+            let uri = AnoBBS.getThumbImage(this.props.post.img, this.props.post.ext);
+            let self = this;
+            Image.getSize(uri, (width, height) => {
+                let rate = width / height;
+                if(width > MAX_IMAGE_WIDTH){
+                    width = MAX_IMAGE_WIDTH;
+                    height = MAX_IMAGE_WIDTH / rate;
+                }
+                if(height > MAX_IMAGE_HEIGHT){
+                    height = MAX_IMAGE_HEIGHT;
+                    width = height * rate;
+                }
+                self.setState({
+                    imageWidth: width,
+                    imageHeight: height
+                });
+            });
+            return (
+                <View style={style.image}>
+                    <Image
+
+                        resizeMode="cover"
+                        style={{width: this.state.imageWidth, height: this.state.imageHeight}}
+                        source={{uri: uri}}
+                    />
+                </View>
+                
+            )
         }
     }
 
@@ -22,7 +62,6 @@ export default class PostItem  extends Component {
         let cssStyle = 'body{padding:0,font-size:14px;margin:0;display:inline-block}';
         let script = 'window.location.hash=1;document.title=document.body.offsetHeight';
         let html = `<!DOCUMENT html><html><header><style>${cssStyle}</style></header><body>${this.props.post.content}<script>${script}</script></body></html>`
-        
         return (
             <TouchableOpacity onPress={this.onPostPress.bind(this)}>
                 <View style={style.container}>
@@ -40,6 +79,7 @@ export default class PostItem  extends Component {
                             style={{height: this.state.height}}
                         />
                     </View>
+                    { this.renderImage() }
                 </View>
             </TouchableOpacity>
         );
@@ -74,7 +114,7 @@ const style = StyleSheet.create({
     },
     admin: {
         color: 'red'
-    },
+    }
 });
 
 PostItem.propTypes = {

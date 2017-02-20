@@ -1,5 +1,10 @@
 
 const HOST = 'https://h.nimingban.com';
+
+const CDN_PATH = 'http://cdn.ovear.info:9009';
+const THUMB_PATH = '/thumb';
+const IMAGE_PATH = '/image';
+
 const DEFAULT_HEADERS = {
     // 'User-Agent': 'HavfunClient-平台'
 };
@@ -36,5 +41,13 @@ export default class AnoBBS {
     static thread(id, page = 1){
         return AnoBBS._request('GET', `/Api/thread?id=${id}&page=${page}`)
             .then(response => response.json());
+    }
+
+    static getThumbImage(imageUri, ext){
+        return `${CDN_PATH}${THUMB_PATH}/${imageUri}${ext}`;
+    };
+
+    static getImage(imageUri, ext){
+        return `${CDN_PATH}${IMAGE_PATH}/${imageUri}${ext}`;
     }
 }
