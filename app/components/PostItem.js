@@ -5,7 +5,8 @@ import {
     Text,
     View,
     Button,
-    WebView
+    WebView,
+    TouchableOpacity
 } from 'react-native';
 
 
@@ -23,22 +24,24 @@ export default class PostItem  extends Component {
         let html = `<!DOCUMENT html><html><header><style>${cssStyle}</style></header><body>${this.props.post.content}<script>${script}</script></body></html>`
         
         return (
-            <View style={style.container}>
-                <View style={style.header}>
-                    <Text style={[style.small, this.props.post.admin != 0 && style.admin]}>{this.props.post.userid}</Text>
-                    <Text style={style.small}>No.{this.props.post.id}</Text>
-                    <Text style={style.small}>{this.props.post.now}</Text>
+            <TouchableOpacity onPress={this.onPostPress.bind(this)}>
+                <View style={style.container}>
+                    <View style={style.header}>
+                        <Text style={[style.small, this.props.post.admin != 0 && style.admin]}>{this.props.post.userid}</Text>
+                        <Text style={style.small}>No.{this.props.post.id}</Text>
+                        <Text style={style.small}>{this.props.post.now}</Text>
+                    </View>
+                    <View>
+                        <WebView
+                            source={{html: html}}
+                            automaticallyAdjustContentInsets={false}
+                            scrollEnabled={false}
+                            onNavigationStateChange={this.onNavigationStateChange.bind(this)}
+                            style={{height: this.state.height}}
+                        />
+                    </View>
                 </View>
-                <View>
-                    <WebView
-                        source={{html: html}}
-                        automaticallyAdjustContentInsets={false}
-                        scrollEnabled={false}
-                        onNavigationStateChange={this.onNavigationStateChange.bind(this)}
-                        style={{height: this.state.height}}
-                    />
-                </View>
-            </View>
+            </TouchableOpacity>
         );
     }
 
@@ -46,6 +49,12 @@ export default class PostItem  extends Component {
         this.setState({
             height: parseInt(state.title)
         });
+    }
+
+    onPostPress() {
+        if(this.props.navigation){
+            this.props.navigation.navigate('PostDetail', {post: this.props.post})
+        }
     }
 }
 

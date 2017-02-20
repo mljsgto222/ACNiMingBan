@@ -1,10 +1,10 @@
 
 const HOST = 'https://h.nimingban.com';
 const DEFAULT_HEADERS = {
-    'User-Agent': 'HavfunClient-平台'
+    // 'User-Agent': 'HavfunClient-平台'
 };
 
-export default class AnoBoos {
+export default class AnoBBS {
     static _request(method, path, headers) {
         return fetch(`${HOST}/${path}`, {
             method: method || 'GET',
@@ -16,7 +16,7 @@ export default class AnoBoos {
     }
 
     static getForumList() {
-        return AnoBoos._request('GET', '/Api/getForumList')
+        return AnoBBS._request('GET', '/Api/getForumList')
             .then((response) => response.json())
             .then((response) => {
                 let forums = [];
@@ -29,7 +29,12 @@ export default class AnoBoos {
     }
 
     static showf(id, page = 1) {
-        return AnoBoos._request('GET', `/Api/showf?id=${id}&page=${page}`)
+        return AnoBBS._request('GET', `/Api/showf?id=${id}&page=${page}`)
             .then((response => response.json()));
+    }
+
+    static thread(id, page = 1){
+        return AnoBBS._request('GET', `/Api/thread?id=${id}&page=${page}`)
+            .then(response => response.json());
     }
 }

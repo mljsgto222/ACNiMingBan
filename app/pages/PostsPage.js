@@ -6,12 +6,12 @@
 
 import React, { Component } from 'react';
 import {
-    TouchableOpacity,
     ListView,
     ActivityIndicator,
     RefreshControl,
     View,
-    Image
+    Image,
+    TouchableOpacity
 } from 'react-native';
 const SideMenu = require('react-native-side-menu');
 
@@ -76,6 +76,7 @@ export default class NiMingBan extends Component {
     render() {
          if(this.state.posts){
             this.props.navigation.state.instance = this;
+            var self = this;
             return (
                 <SideMenu 
                     menu={
@@ -98,7 +99,7 @@ export default class NiMingBan extends Component {
                             dataSource={this.state.posts}
                             renderRow={(rowData) => {
                                 return (
-                                    <PostItem post={rowData} />
+                                    <PostItem post={rowData} navigation={self.props.navigation}/>
                                 );
                             }}
                         />
@@ -168,4 +169,5 @@ export default class NiMingBan extends Component {
 
         this._load();
     }
+
 }
